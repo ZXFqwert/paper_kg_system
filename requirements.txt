@@ -1,0 +1,14 @@
+flask>=2.3.0
+flask-cors>=4.0.0
+requests>=2.31.0
+feedparser>=6.0.10
+aiohttp>=3.8.0
+networkx>=3.1
+numpy>=1.24.0
+tiktoken>=0.5.0
+openai>=1.0.0
+tenacity>=8.0.0
+xxhash>=3.0.0
+hnswlib>=0.7.0
+graspologic>=3.0.0
+future>=0.18.0 

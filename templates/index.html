@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>论文知识图谱系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-project-diagram"></i> 论文知识图谱</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="search">
+                    <a href="#"><i class="fas fa-search"></i> 论文检索</a>
+                </li>
+                <li class="nav-item" data-page="graph">
+                    <a href="#"><i class="fas fa-network-wired"></i> 知识图谱</a>
+                </li>
+                <li class="nav-item" data-page="settings">
+                    <a href="#"><i class="fas fa-cog"></i> 系统设置</a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-item">
+                        <span class="label">收录论文:</span>
+                        <span class="value" id="collected-count">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">实体数量:</span>
+                        <span class="value" id="entities-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 论文检索页面 -->
+            <div class="page" id="search-page">
+                <div class="page-header">
+                    <h1>论文检索</h1>
+                    <p>通过ArXiv搜索并收录论文</p>
+                </div>
+
+                <div class="search-section">
+                    <div class="search-form">
+                        <div class="search-input-group">
+                            <input type="text" id="search-input" placeholder="输入关键词搜索论文..." />
+                            <button type="button" id="search-btn" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 搜索
+                            </button>
+                        </div>
+                        <div class="search-options">
+                            <label>
+                                <span>排序:</span>
+                                <select id="sort-by">
+                                    <option value="relevance">相关性</option>
+                                    <option value="lastUpdatedDate">最新更新</option>
+                                </select>
+                            </label>
+                            <label>
+                                <span>每页数量:</span>
+                                <select id="per-page">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="search-results" id="search-results">
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>输入关键词开始搜索</p>
+                        </div>
+                    </div>
+
+                    <div class="pagination" id="pagination" style="display: none;">
+                        <button id="prev-page" class="btn btn-outline">上一页</button>
+                        <span id="page-info">第 1 页，共 1 页</span>
+                        <button id="next-page" class="btn btn-outline">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 知识图谱页面 -->
+            <div class="page" id="graph-page" style="display: none;">
+                <div class="graph-layout">
+                    <!-- 左侧论文管理区 -->
+                    <div class="papers-panel" id="papers-panel">
+                        <div class="panel-header">
+                            <h3>收录论文</h3>
+                            <button class="btn btn-outline btn-sm" id="toggle-panel">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </div>
+                        <div class="panel-content">
+                            <div class="panel-actions">
+                                <button class="btn btn-success" id="build-graph-btn">
+                                    <i class="fas fa-cogs"></i> 构建知识图谱
+                                </button>
+                            </div>
+                            <div class="papers-list" id="papers-list">
+                                <div class="loading-placeholder">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>加载中...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧问答交互区 -->
+                    <div class="chat-panel">
+                        <div class="panel-header">
+                            <h3>智能问答</h3>
+                            <div class="query-mode">
+                                <label>
+                                    <input type="radio" name="query-mode" value="local" checked>
+                                    Local
+                                </label>
+                                <label>
+                                    <input type="radio" name="query-mode" value="global">
+                                    Global
+                                </label>
+                            </div>
+                        </div>
+                        <div class="chat-content">
+                            <div class="chat-history" id="chat-history">
+                                <div class="welcome-message">
+                                    <i class="fas fa-robot"></i>
+                                    <p>欢迎使用论文知识图谱问答系统！请先收录论文并构建知识图谱，然后就可以进行智能问答了。</p>
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <div class="input-group">
+                                    <input type="text" id="chat-input" placeholder="输入您的问题..." />
+                                    <button id="send-btn" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统设置页面 -->
+            <div class="page" id="settings-page" style="display: none;">
+                <div class="page-header">
+                    <h1>系统设置</h1>
+                    <p>配置系统参数和模型设置</p>
+                </div>
+
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3><i class="fas fa-robot"></i> OpenAI 设置</h3>
+                        <form id="openai-form" class="form-grid">
+                            <div class="form-group">
+                                <label for="api-base">API Base URL:</label>
+                                <input type="text" id="api-base" placeholder="https://api.openai.com/v1" />
+                            </div>
+                            <div class="form-group">
+                                <label for="api-key">API Key:</label>
+                                <input type="password" id="api-key" placeholder="sk-..." />
+                            </div>
+                            <div class="form-group">
+                                <label for="extract-model">抽取模型:</label>
+                                <select id="extract-model">
+                                    <option value="gpt-4o-mini">gpt-4o-mini</option>
+                                    <option value="gpt-4o">gpt-4o</option>
+                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="qa-model">问答模型:</label>
+                                <select id="qa-model">
+                                    <option value="gpt-4o">gpt-4o</option>
+                                    <option value="gpt-4o-mini">gpt-4o-mini</option>
+                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="temperature">温度参数:</label>
+                                <input type="number" id="temperature" min="0" max="1" step="0.1" value="0.1" />
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="test-connection" class="btn btn-outline">
+                                    <i class="fas fa-plug"></i> 测试连接
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-sliders-h"></i> 系统参数</h3>
+                        <form id="system-form" class="form-grid">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="deep-mode" />
+                                    <span class="checkmark"></span>
+                                    深度模式（获取完整论文文本）
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="chunk-size">分块大小:</label>
+                                <input type="number" id="chunk-size" min="500" max="2000" value="1200" />
+                            </div>
+                            <div class="form-group">
+                                <label for="chunk-overlap">分块重叠:</label>
+                                <input type="number" id="chunk-overlap" min="0" max="500" value="100" />
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button type="button" id="save-settings" class="btn btn-success">
+                            <i class="fas fa-save"></i> 保存设置
+                        </button>
+                        <button type="button" id="reset-settings" class="btn btn-outline">
+                            <i class="fas fa-undo"></i> 重置设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal" id="paper-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>论文详情</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="paper-details">
+                <!-- 论文详情内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 进度模态框 -->
+    <div class="modal" id="progress-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="progress-title">处理中...</h3>
+            </div>
+            <div class="modal-body">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progress-message">请稍候...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示框 -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <span id="toast-message"></span>
+            <button class="toast-close">&times;</button>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 
