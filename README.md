@@ -214,14 +214,26 @@ POST   /api/query               # 知识图谱问答
 - **网络要求**: 能访问ArXiv和OpenAI API
 
 ### 一键部署
+
+#### Linux/macOS
 ```bash
 # 1. 获取源码
-git clone <repository-url>
+git clone https://github.com/ZXFqwert/paper_kg_system.git
 cd paper_kg_system
 
 # 2. 执行部署脚本
 chmod +x run.sh
 ./run.sh
+```
+
+#### Windows
+```cmd
+# 1. 获取源码
+git clone https://github.com/ZXFqwert/paper_kg_system.git
+cd paper_kg_system
+
+# 2. 双击运行或命令行执行
+run.bat
 ```
 
 ### 手动部署
