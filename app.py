@@ -414,7 +414,7 @@ def get_system_status():
             'last_updated': datetime.now().isoformat()
         }
         
-        return jsonify(status)
+        return jsonify({'success': True, 'status': status})
         
     except Exception as e:
         return jsonify({'error': f'获取系统状态失败: {str(e)}'}), 500
